@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense &amp; Budget Visualizer</title>
+
+  <!-- Theme initialization: runs synchronously before CSS to prevent flash-of-wrong-theme -->
+  <script>
+    (function () {
+      var stored = localStorage.getItem('theme');
+      var theme = stored
+        ? stored
+        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js" defer></script>
+  <script src="js/script.js" defer></script>
+</head>
+<body>
+
+  <!-- Storage unavailability warning banner (hidden by default) -->
+  <div id="storage-banner" role="alert" aria-live="polite" hidden>
+    Storage unavailable — your data will not be saved between sessions.
+  </div>
+
+  <header>
+    <div id="balance-display" aria-live="polite" aria-label="Total balance">
+      <!-- Populated by script.js -->
+    </div>
+
+    <div id="limit-section">
+      <label for="limit-input">Spending Limit</label>
+      <input
+        type="number"
+        id="limit-input"
+        name="limit"
+        min="0.01"
+        step="0.01"
+        placeholder="Enter limit"
+        aria-describedby="limit-error"
+      />
+      <span id="limit-error" role="alert" aria-live="polite"></span>
+      <button type="button" id="set-limit-btn">Set Limit</button>
+      <button type="button" id="clear-limit-btn">Clear Limit</button>
+    </div>
+
+    <button type="button" id="theme-toggle" aria-label="Toggle dark/light mode">
+      Toggle Theme
+    </button>
+  </header>
+
+  <main>
+    <!-- Transaction form + custom category manager -->
+    <section id="form-section" aria-labelledby="form-section-heading">
+      <h2 id="form-section-heading">Add Transaction</h2>
+
+      <form id="transaction-form" novalidate>
+        <div class="field-group">
+          <label for="item-name">Item Name</label>
+          <input
+            type="text"
+            id="item-name"
+            name="name"
+            placeholder="e.g. Coffee"
+            autocomplete="off"
+            aria-describedby="name-error"
+            required
+          />
+          <span id="name-error" class="field-error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <div class="field-group">
+          <label for="item-amount">Amount</label>
+          <input
+            type="number"
+            id="item-amount"
+            name="amount"
+            min="0.01"
+            step="0.01"
+            placeholder="0.00"
+            aria-describedby="amount-error"
+            required
+          />
+          <span id="amount-error" class="field-error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <div class="field-group">
+          <label for="item-category">Category</label>
+          <select
+            id="item-category"
+            name="category"
+            aria-describedby="category-error"
+            required
+          >
+            <option value="">Select a category</option>
+            <!-- Options populated by script.js -->
+          </select>
+          <span id="category-error" class="field-error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <button type="submit" id="add-transaction-btn">Add Transaction</button>
+      </form>
+
+      <div id="category-manager" aria-labelledby="category-manager-heading">
+        <h3 id="category-manager-heading">Custom Categories</h3>
+
+        <div class="field-group">
+          <label for="new-category-input">New Category</label>
+          <input
+            type="text"
+            id="new-category-input"
+            name="new-category"
+            placeholder="Category name"
+            autocomplete="off"
+            aria-describedby="new-category-error"
+          />
+          <span id="new-category-error" class="field-error" role="alert" aria-live="polite"></span>
+          <button type="button" id="add-category-btn">Add Category</button>
+        </div>
+
+        <ul id="custom-category-list" aria-label="Custom categories">
+          <!-- Populated by script.js -->
+        </ul>
+      </div>
+    </section>
+
+    <!-- Pie chart -->
+    <section id="chart-section" aria-labelledby="chart-section-heading">
+      <h2 id="chart-section-heading">Spending by Category</h2>
+      <canvas id="spending-chart" role="img" aria-label="Spending distribution pie chart"></canvas>
+      <div id="chart-placeholder" aria-live="polite">
+        No transactions yet — add one to see the chart.
+      </div>
+    </section>
+
+    <!-- Transaction list with sort controls -->
+    <section id="list-section" aria-labelledby="list-section-heading">
+      <h2 id="list-section-heading">Transactions</h2>
+
+      <div id="sort-controls">
+        <label for="sort-field">Sort by</label>
+        <select id="sort-field" name="sort-field" aria-label="Sort field">
+          <option value="date">Date</option>
+          <option value="amount">Amount</option>
+          <option value="category">Category</option>
+        </select>
+
+        <label for="sort-direction">Order</label>
+        <select id="sort-direction" name="sort-direction" aria-label="Sort direction">
+          <option value="desc">Descending</option>
+          <option value="asc">Ascending</option>
+        </select>
+      </div>
+
+      <ul id="transaction-list" aria-label="Transaction history" aria-live="polite">
+        <!-- Populated by script.js -->
+      </ul>
+    </section>
+
+    <!-- Monthly summary -->
+    <section id="summary-section" aria-labelledby="summary-section-heading">
+      <h2 id="summary-section-heading">Monthly Summary</h2>
+      <div id="monthly-summary" aria-live="polite">
+        <!-- Populated by script.js -->
+      </div>
+    </section>
+  </main>
+
+</body>
+</html>

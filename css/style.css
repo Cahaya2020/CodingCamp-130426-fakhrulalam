@@ -1,0 +1,595 @@
+/* ============================================================
+   Expense & Budget Visualizer — css/style.css
+   Mobile-first layout with light/dark theming
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   2.1 CSS Custom Properties — Light Theme (default)
+   All foreground/background pairs meet WCAG 2.1 AA 4.5:1
+   ------------------------------------------------------------ */
+[data-theme="light"] {
+  --bg: #ffffff;
+  --surface: #f5f5f5;
+  --text: #1a1a1a;
+  --accent: #4a90d9;
+  --warning: #e53e3e;
+  --border: #d0d0d0;
+}
+
+/* ------------------------------------------------------------
+   2.1 CSS Custom Properties — Dark Theme
+   ------------------------------------------------------------ */
+[data-theme="dark"] {
+  --bg: #1a1a2e;
+  --surface: #16213e;
+  --text: #e0e0e0;
+  --accent: #5ba3f5;
+  --warning: #fc8181;
+  --border: #2d3748;
+}
+
+/* ------------------------------------------------------------
+   Base / Reset
+   ------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px; /* base for rem calculations */
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 1rem;       /* 16px — never below 14px (0.875rem) */
+  line-height: 1.5;
+  min-width: 320px;
+  overflow-x: hidden;
+  /* Smooth theme transitions */
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* ------------------------------------------------------------
+   2.3 Storage Banner
+   ------------------------------------------------------------ */
+#storage-banner {
+  background-color: var(--warning);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  width: 100%;
+}
+
+#storage-banner[hidden] {
+  display: none;
+}
+
+/* ------------------------------------------------------------
+   2.3 Header
+   ------------------------------------------------------------ */
+header {
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* Balance display — large, prominent */
+#balance-display {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  transition: color 0.2s;
+}
+
+/* Warning state: over-limit highlight */
+#balance-display.warning {
+  color: var(--warning);
+  font-weight: 800;
+}
+
+/* Limit section — compact inline layout */
+#limit-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#limit-section label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+#limit-input {
+  flex: 1 1 8rem;
+  min-width: 6rem;
+  max-width: 12rem;
+}
+
+#limit-error {
+  flex-basis: 100%;
+  font-size: 0.8125rem;
+  color: var(--warning);
+  min-height: 1.2em;
+}
+
+/* Theme toggle button */
+#theme-toggle {
+  align-self: flex-start;
+}
+
+/* On wider screens, lay header items out in a row */
+@media (min-width: 640px) {
+  header {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  #balance-display {
+    flex: 1 1 auto;
+  }
+
+  #limit-section {
+    flex: 0 1 auto;
+  }
+
+  #theme-toggle {
+    align-self: center;
+  }
+}
+
+/* ------------------------------------------------------------
+   2.2 Main — Mobile-first single-column grid
+   ------------------------------------------------------------ */
+main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Two-column grid at 640px+ */
+@media (min-width: 640px) {
+  main {
+    grid-template-columns: 1fr 1fr;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+}
+
+/* ------------------------------------------------------------
+   Card base — shared by all sections
+   ------------------------------------------------------------ */
+main > section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+main > section h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+/* ------------------------------------------------------------
+   Typography helpers
+   ------------------------------------------------------------ */
+h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text);
+}
+
+/* ------------------------------------------------------------
+   Interactive elements — shared base
+   Minimum 44×44px touch targets (2.2)
+   ------------------------------------------------------------ */
+button,
+input,
+select {
+  font-family: inherit;
+  font-size: 0.9375rem; /* 15px — above 14px minimum */
+  color: var(--text);
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  padding: 0.625rem 0.75rem;
+  min-height: 2.75rem; /* 44px */
+  width: 100%;
+  outline: none;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+button {
+  background-color: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.625rem 1rem;
+  min-height: 2.75rem; /* 44px */
+  min-width: 2.75rem;  /* 44px */
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: opacity 0.15s, background-color 0.2s;
+}
+
+button:hover {
+  opacity: 0.88;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Secondary / destructive buttons */
+button.btn-secondary {
+  background-color: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+button.btn-danger {
+  background-color: var(--warning);
+}
+
+/* ------------------------------------------------------------
+   Field groups and error spans (2.4)
+   ------------------------------------------------------------ */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.875rem;
+}
+
+.field-group label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.field-error {
+  font-size: 0.8125rem; /* 13px — error text can be slightly smaller */
+  color: var(--warning);
+  min-height: 1.2em;
+  font-weight: 500;
+}
+
+/* ------------------------------------------------------------
+   2.4 Transaction Form (#transaction-form)
+   ------------------------------------------------------------ */
+#transaction-form {
+  /* inherits card styles from main > section */
+}
+
+#transaction-form .field-group:last-of-type {
+  margin-bottom: 1rem;
+}
+
+#add-transaction-btn {
+  width: 100%;
+}
+
+/* ------------------------------------------------------------
+   2.4 Category Manager (#category-manager)
+   ------------------------------------------------------------ */
+#category-manager {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+#category-manager .field-group {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+#category-manager .field-group label {
+  flex-basis: 100%;
+}
+
+#new-category-input {
+  flex: 1 1 8rem;
+}
+
+#add-category-btn {
+  flex-shrink: 0;
+}
+
+#new-category-error {
+  flex-basis: 100%;
+}
+
+/* Custom category list */
+#custom-category-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+}
+
+#custom-category-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.375rem 0.5rem;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  font-size: 0.9375rem;
+  transition: background-color 0.2s;
+}
+
+#custom-category-list li .category-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#custom-category-list li button {
+  background-color: transparent;
+  color: var(--warning);
+  border: 1px solid var(--warning);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8125rem;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  border-radius: 0.25rem;
+}
+
+#custom-category-list li button:hover {
+  background-color: var(--warning);
+  color: #fff;
+}
+
+/* ------------------------------------------------------------
+   2.4 Chart Section (#chart-section)
+   ------------------------------------------------------------ */
+#chart-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+#spending-chart {
+  max-width: 100%;
+  height: auto;
+}
+
+#chart-placeholder {
+  font-size: 0.9375rem;
+  color: var(--text);
+  opacity: 0.6;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+/* ------------------------------------------------------------
+   2.4 Sort Controls (#sort-controls)
+   ------------------------------------------------------------ */
+#sort-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.875rem;
+}
+
+#sort-controls label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+#sort-controls select {
+  flex: 1 1 8rem;
+  min-width: 7rem;
+}
+
+/* ------------------------------------------------------------
+   2.4 Transaction List (#transaction-list)
+   ------------------------------------------------------------ */
+#transaction-list {
+  list-style: none;
+  max-height: 24rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  /* Subtle inset scroll area */
+  padding-right: 0.25rem;
+}
+
+/* Scrollbar styling (Webkit) */
+#transaction-list::-webkit-scrollbar {
+  width: 0.375rem;
+}
+
+#transaction-list::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-radius: 0.25rem;
+}
+
+#transaction-list::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 0.25rem;
+}
+
+/* Individual transaction items */
+#transaction-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  font-size: 0.9375rem;
+  transition: background-color 0.2s;
+}
+
+#transaction-list li:hover {
+  background-color: color-mix(in srgb, var(--accent) 8%, var(--bg));
+}
+
+.transaction-name {
+  flex: 1;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transaction-category {
+  font-size: 0.8125rem;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.transaction-amount {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.transaction-date {
+  font-size: 0.8125rem;
+  opacity: 0.65;
+  white-space: nowrap;
+}
+
+/* Delete button inside transaction items */
+#transaction-list li button {
+  background-color: transparent;
+  color: var(--warning);
+  border: 1px solid var(--warning);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8125rem;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  border-radius: 0.25rem;
+  flex-shrink: 0;
+}
+
+#transaction-list li button:hover {
+  background-color: var(--warning);
+  color: #fff;
+}
+
+/* Empty state */
+#transaction-list:empty::after {
+  content: "No transactions yet.";
+  display: block;
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 0.9375rem;
+  opacity: 0.6;
+}
+
+/* ------------------------------------------------------------
+   2.4 Monthly Summary (#monthly-summary)
+   ------------------------------------------------------------ */
+#monthly-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Each month group rendered as a mini-card */
+.month-group {
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
+  transition: background-color 0.2s;
+}
+
+.month-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.25rem;
+}
+
+.month-group-title {
+  font-weight: 700;
+  font-size: 0.9375rem;
+}
+
+.month-group-total {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 0.9375rem;
+}
+
+.month-group-count {
+  font-size: 0.8125rem;
+  opacity: 0.65;
+}
+
+/* Empty state */
+#monthly-summary:empty::after {
+  content: "No data yet.";
+  display: block;
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 0.9375rem;
+  opacity: 0.6;
+}
+
+/* ------------------------------------------------------------
+   Utility: visually hidden (for screen-reader-only text)
+   ------------------------------------------------------------ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
